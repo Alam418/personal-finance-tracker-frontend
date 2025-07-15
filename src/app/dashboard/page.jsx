@@ -82,7 +82,7 @@ export default function DashboardPage() {
               return (
                 <li key={tx.id}>
                   <div>
-                    <p>{tx.description} aaa</p>
+                    <p>{tx.description}</p>
                     <p>
                       {tx.transactions_date?.split("T")[0] ||
                         "Tanggal tidak tersedia"}
