@@ -8,18 +8,23 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     axios
       .get("http://localhost:3005/api/v1/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        withCredentials: true,
       })
       .then((res) => setUser(res.data))
-      .catch(() => setUser({ username: "Guest" }));
-  });
+      .catch((err) => {
+        const status = err.response?.status;
+        const message = err.response?.data?.message;
+
+        console.error("AUTH ME ERROR:", status, message);
+
+        if (status === 401 && message?.toLowerCase().includes("expired")) {
+          localStorage.removeItem("token");
+          setUser({ username: "Guest" });
+        }
+      });
+  }, []);
 
   return (
     <nav className="bg-white shadow px-6 py-4 flex justify-between items-center">
@@ -53,7 +58,21 @@ export default function Navbar() {
               Edit Profile
             </a>
             <a
-              href="/logout"
+              href="#"
+              onClick={() => {
+                axios
+                  .post(
+                    "http://localhost:3005/api/v1/auth/logout",
+                    {},
+                    { withCredentials: true }
+                  )
+                  .then(() => {
+                    window.location.href = "/login";
+                  })
+                  .catch(() => {
+                    alert("Gagal logout");
+                  });
+              }}
               className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
             >
               Logout
