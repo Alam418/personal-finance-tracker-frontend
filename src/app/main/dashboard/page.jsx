@@ -43,7 +43,7 @@ export default function DashboardPage() {
 
       {/* Transaction List */}
       <section className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold mb-4">Transaksi Terbaru</h2>
+        <h2 className="text-lg text-gray-800 font-semibold mb-4">Newest Transaction</h2>
         {transactions.length > 0 ? (
           <ul className="divide-y divide-gray-200">
             {transactions.map((tx) => (

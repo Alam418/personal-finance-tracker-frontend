@@ -9,20 +9,29 @@ export default function Sidebar() {
         💰 MyFinance
       </h1>
       <nav className="flex flex-col gap-4">
-        <Link href="/dashboard" className="text-gray-700 hover:text-blue-600">
+        <Link
+          href="/main/dashboard"
+          className="text-gray-700 hover:text-blue-600"
+        >
           Dashboard
         </Link>
-        <Link href="/transaction" className="text-gray-700 hover:text-blue-600">
+        <Link
+          href="/main/transaction"
+          className="text-gray-700 hover:text-blue-600"
+        >
           Transactions
         </Link>
-        <Link href="/accounts" className="text-gray-700 hover:text-blue-600">
+        <Link
+          href="/main/accounts"
+          className="text-gray-700 hover:text-blue-600"
+        >
           Accounts
         </Link>
-        <Link href="/categories" className="text-gray-700 hover:text-blue-600">
+        <Link
+          href="/main/categories"
+          className="text-gray-700 hover:text-blue-600"
+        >
           Categories
-        </Link>
-        <Link href="/login" className="text-gray-700 hover:text-blue-600">
-          Login
         </Link>
       </nav>
     </aside>

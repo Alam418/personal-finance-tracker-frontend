@@ -11,7 +11,7 @@ export default function Home() {
     axios
       .get("http://localhost:3005/api/v1/auth/me", { withCredentials: true })
       .then(() => {
-        router.push("/dashboard");
+        router.push("/main/dashboard");
       })
       .catch(() => {
         router.push("/login");
