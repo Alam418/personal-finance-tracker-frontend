@@ -7,6 +7,9 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -46,12 +49,13 @@ export default function TransactionsPage() {
         withCredentials: true,
         params: {
           ...filters,
-          page: 1,
+          page: page,
           limit: 10,
         },
       })
       .then((res) => {
         setTransactions(res.data.data);
+        setTotalPages(res.data.totalPages || 1);
         setLoading(false);
       })
       .catch((err) => {
@@ -111,6 +115,7 @@ export default function TransactionsPage() {
         amount: "",
         description: "",
       });
+      setPage(1);
       fetchTransactions();
     } catch (err) {
       console.error("Save transaction error", err);
@@ -122,11 +127,28 @@ export default function TransactionsPage() {
     setShowForm(true);
   };
 
+  const handleDelete = async () => {
+    try {
+      await axios.delete(
+        `http://localhost:3005/api/v1/transactions/${confirmDelete.id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      setConfirmDelete({ show: false, id: null });
+      setPage(1);
+      fetchTransactions();
+    } catch (err) {
+      console.error("Delete transaction error", err);
+      alert("Gagal menghapus transaksi");
+    }
+  };
+
   useEffect(() => {
     fetchTransactions();
     fetchCategories();
     fetchAccounts();
-  }, []);
+  }, [page]);
 
   if (loading) return <p className="text-center mt-6">Loading...</p>;
   if (error) return <p className="text-center mt-6 text-red-500">{error}</p>;
@@ -147,6 +169,7 @@ export default function TransactionsPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            setPage(1);
             fetchTransactions();
           }}
           className="flex flex-wrap gap-4 items-end my-2"
@@ -264,7 +287,12 @@ export default function TransactionsPage() {
                     >
                       Edit
                     </button>
-                    <button className="text-red-600 hover:underline">
+                    <button
+                      className="text-red-600 hover:underline"
+                      onClick={() =>
+                        setConfirmDelete({ show: true, id: trx.id })
+                      }
+                    >
                       Delete
                     </button>
                   </td>
@@ -272,6 +300,53 @@ export default function TransactionsPage() {
               ))}
             </tbody>
           </table>
+
+          <div className="flex justify-between items-center mt-4 text-sm">
+            <p>
+              Halaman {page} dari {totalPages}
+            </p>
+            <div className="space-x-2">
+              <button
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                disabled={page === 1}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                Prev
+              </button>
+              <button
+                onClick={() =>
+                  setPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={page === totalPages}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+
+          {confirmDelete.show && (
+            <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow max-w-sm w-full">
+                <h3 className="text-lg font-bold mb-4">Hapus Transaksi</h3>
+                <p className="mb-6">Yakin ingin menghapus transaksi ini?</p>
+                <div className="flex justify-end space-x-2">
+                  <button
+                    onClick={() => setConfirmDelete({ show: false, id: null })}
+                    className="px-4 py-2 border rounded text-sm"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="px-4 py-2 bg-red-600 text-white rounded text-sm"
+                  >
+                    Hapus
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {showForm && (
             <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
