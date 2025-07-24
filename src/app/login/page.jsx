@@ -21,7 +21,7 @@ export default function LoginPage() {
       await axios.post("http://localhost:3005/api/v1/auth/login", form, {
         withCredentials: true,
       });
-      router.push("/dashboard");
+      router.push("/main/dashboard");
     } catch (err) {
       const msg = err.response?.data?.message || "Login gagal";
       setError(msg);
